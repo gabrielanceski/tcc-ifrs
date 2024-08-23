@@ -1,0 +1,14 @@
+services:
+  database:
+    image: mariadb:latest
+    container_name: tcc-ifrs-database
+    restart: always
+    environment:
+      MARIADB_USER: user
+      MARIADB_PASSWORD: password
+      MARIADB_ROOT_PASSWORD: root
+    volumes:
+      - "./database/data:/var/lib/mysql/data/"
+      - "./database/logs:/var/lib/mysql/logs/"
+    ports:
+      - 3306:3306

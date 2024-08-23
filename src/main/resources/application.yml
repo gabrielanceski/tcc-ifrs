@@ -1,5 +1,26 @@
 spring:
   application:
     name: tcc-ifrs
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: CLIENT_ID
+            client-secret: CLIENT_SECRET
+  datasource:
+      url: jdbc:mariadb://localhost:3306/tcc_ifrs
+      username: root
+      password: root
+      driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
 server:
   port: 8080
+logging:
+  level:
+    org.springframework.security: TRACE
