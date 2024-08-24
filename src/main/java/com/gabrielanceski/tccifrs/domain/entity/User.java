@@ -24,6 +24,8 @@ public class User {
 
     private String email;
     private String password;
+    private Boolean active;
+    private Boolean blocked;
 
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
