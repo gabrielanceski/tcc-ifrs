@@ -1,4 +1,4 @@
-package com.gabrielanceski.tccifrs.entity;
+package com.gabrielanceski.tccifrs.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -6,31 +6,30 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Entity
-@Table(name = "projects")
+@Table(name = "tasks")
 @Data
-public class Project {
+public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     @Column(nullable = false)
-    private String name;
+    private String title;
 
     @Column(nullable = false)
-    private String status;
-
     private String description;
 
-    @ManyToMany
-    @JoinTable(
-        name = "project_teams",
-        joinColumns = @JoinColumn(name = "project_id"),
-        inverseJoinColumns = @JoinColumn(name = "team_id")
-    )
-    private Set<Team> teams;
+    private String status;
+
+    @ManyToOne
+    @JoinColumn(name = "requirement_id", nullable = false)
+    private Requirement requirement;
+
+    @ManyToOne
+    @JoinColumn(name = "team_id", nullable = false)
+    private Team team;
 
     @CreatedDate
     @Column(updatable = false)
@@ -38,5 +37,4 @@ public class Project {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
-
 }

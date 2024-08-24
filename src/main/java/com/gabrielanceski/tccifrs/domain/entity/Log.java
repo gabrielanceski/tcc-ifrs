@@ -1,4 +1,4 @@
-package com.gabrielanceski.tccifrs.entity;
+package com.gabrielanceski.tccifrs.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -7,19 +7,20 @@ import org.springframework.data.annotation.CreatedDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "prototypes")
+@Table(name = "logs")
 @Data
-public class Prototype {
+public class Log {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(nullable = false)
-    private String description;
+    @ManyToOne
+    @JoinColumn(name = "event_type_id", nullable = false)
+    private EventType eventType;
 
     @ManyToOne
-    @JoinColumn(name = "project_id", nullable = false)
-    private Project project;
+    @JoinColumn(name = "caused_by")
+    private User causedBy;
 
     @CreatedDate
     @Column(updatable = false)

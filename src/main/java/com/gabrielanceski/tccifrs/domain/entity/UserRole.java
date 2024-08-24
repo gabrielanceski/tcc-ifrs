@@ -1,7 +1,8 @@
-package com.gabrielanceski.tccifrs.entity;
+package com.gabrielanceski.tccifrs.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 @Entity
 @Table(
@@ -22,4 +23,8 @@ public class UserRole {
 //    STUDENT,
 //    PROFESSOR,
 //    GUEST
+    @Override
+    public String toString() {
+        return role;
+    }
 }

@@ -1,4 +1,4 @@
-package com.gabrielanceski.tccifrs.entity;
+package com.gabrielanceski.tccifrs.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

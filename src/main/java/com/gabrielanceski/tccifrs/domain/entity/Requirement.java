@@ -1,4 +1,4 @@
-package com.gabrielanceski.tccifrs.entity;
+package com.gabrielanceski.tccifrs.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -8,28 +8,39 @@ import org.springframework.data.annotation.LastModifiedDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tasks")
+@Table(name = "requirements")
 @Data
-public class Task {
+public class Requirement {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     @Column(nullable = false)
-    private String title;
+    private String name;
 
     @Column(nullable = false)
     private String description;
 
-    private String status;
+    @Column(nullable = false)
+    private String goals;
+
+    @Column(nullable = false)
+    private String specs;
+
+    private String extra; // colaboração esperada e áreas de inovação
+
+    private String restrictions;
+
+    @OneToOne
+    private Requirement blockedBy;
 
     @ManyToOne
-    @JoinColumn(name = "requirement_id", nullable = false)
-    private Requirement requirement;
+    @JoinColumn(name = "project_id", nullable = false)
+    private Project project;
 
     @ManyToOne
-    @JoinColumn(name = "team_id", nullable = false)
-    private Team team;
+    @JoinColumn(name = "reporter_id", nullable = false)
+    private User reporter;
 
     @CreatedDate
     @Column(updatable = false)
@@ -37,4 +48,5 @@ public class Task {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
 }
