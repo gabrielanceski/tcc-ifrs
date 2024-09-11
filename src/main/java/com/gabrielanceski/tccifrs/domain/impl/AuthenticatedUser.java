@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.List;
 
 @AllArgsConstructor
-public class UserAuthenticated implements UserDetails {
+public class AuthenticatedUser implements UserDetails {
     private final User entity;
 
     @Override
@@ -29,7 +29,7 @@ public class UserAuthenticated implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
+        return true;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class UserAuthenticated implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
+        return true;
     }
 
     @Override
