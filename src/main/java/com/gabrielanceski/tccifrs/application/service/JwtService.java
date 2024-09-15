@@ -2,12 +2,15 @@ package com.gabrielanceski.tccifrs.application.service;
 
 import com.gabrielanceski.tccifrs.presentation.domain.response.AuthenticationResponse;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -25,7 +28,7 @@ public class JwtService {
     public AuthenticationResponse generateToken(Authentication authentication) {
         Instant now = Instant.now();
 
-        String scopes = authentication.getAuthorities().stream()
+        String roles = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(", "));
 
@@ -34,7 +37,7 @@ public class JwtService {
                 .issuedAt(now)
                 .expiresAt(now.plus(EXPIRATION_TIME, ChronoUnit.SECONDS))
                 .subject(authentication.getName())
-                .claim("scope", scopes)
+                .claim("role", roles)
                 .build();
 
         Jwt token = jwtEncoder.encode(JwtEncoderParameters.from(claims));
@@ -43,5 +46,17 @@ public class JwtService {
                 token.getTokenValue(),
                 Objects.requireNonNull(token.getExpiresAt()).toEpochMilli()
         );
+    }
+
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(jwt -> jwt.getClaimAsStringList("role")
+                .stream()
+                .map(role -> "ROLE_" + role)
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList())
+        );
+        return converter;
     }
 }
