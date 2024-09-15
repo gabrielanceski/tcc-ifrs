@@ -22,6 +22,7 @@ public class User {
     @Column(nullable = false)
     private String document;
 
+    private String name;
     private String email;
     private String password;
     private Boolean active;
