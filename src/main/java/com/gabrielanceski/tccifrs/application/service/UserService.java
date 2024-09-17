@@ -1,11 +1,12 @@
 package com.gabrielanceski.tccifrs.application.service;
 
+import com.gabrielanceski.tccifrs.domain.Role;
 import com.gabrielanceski.tccifrs.domain.entity.Company;
 import com.gabrielanceski.tccifrs.domain.entity.Team;
 import com.gabrielanceski.tccifrs.domain.entity.User;
+import com.gabrielanceski.tccifrs.exception.UnknownRoleException;
 import com.gabrielanceski.tccifrs.exception.UserNotFoundException;
 import com.gabrielanceski.tccifrs.infrastructure.repository.CompanyRepository;
-import com.gabrielanceski.tccifrs.infrastructure.repository.RoleRepository;
 import com.gabrielanceski.tccifrs.infrastructure.repository.TeamRepository;
 import com.gabrielanceski.tccifrs.infrastructure.repository.UserRepository;
 import com.gabrielanceski.tccifrs.presentation.domain.request.UserCreateRequest;
@@ -25,14 +26,11 @@ import java.util.Set;
 @Slf4j
 public record UserService(
     UserRepository userRepository,
-    RoleRepository roleRepository,
     CompanyRepository companyRepository,
     TeamRepository teamRepository,
     PasswordEncoder passwordEncoder
 ) {
     private static final SecureRandom RANDOM = new SecureRandom();
-    private static final String MASTER_ROLE = "MASTER";
-    private static final String COMPANY_ROLE = "COMPANY";
 
     /**
      * Obtém todos os detalhes de um usuário, incluindo detalhes de equipes que ele possui qualquer tipo de associação
@@ -55,7 +53,7 @@ public record UserService(
             throw new IllegalArgumentException("User already exists");
         }
 
-        if (request.role().equalsIgnoreCase(MASTER_ROLE)) throw new IllegalArgumentException("Unknown role name");
+        if (Role.MASTER == Role.fromString(request.role())) throw new UnknownRoleException(request.role());
 
         if (DocumentUtils.getDocumentType(request.document()) == null) {
             throw new IllegalArgumentException("Invalid document number");
@@ -67,7 +65,7 @@ public record UserService(
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setBlocked(false);
         user.setActive(true);
-        user.setRole(roleRepository.findByRole(request.role()).orElseThrow(() -> new IllegalArgumentException("Unknown role name")));
+        user.setRole(Role.fromString(request.role()));
 
         userRepository.save(user);
 
@@ -77,7 +75,7 @@ public record UserService(
     public UserResponse patchUser(String id, UserUpdateRequest request) {
         log.info("patchUser() - updating user <{}> - request: <{}>", id, request);
 
-        if (request.role() != null && request.role().equalsIgnoreCase(MASTER_ROLE)) throw new IllegalArgumentException("Unknown role name");
+        if (request.role() == null || Role.MASTER == Role.fromString(request.role())) throw new UnknownRoleException(request.role());
 
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
         updateUser(user, request);
@@ -87,7 +85,7 @@ public record UserService(
     }
 
     /**
-     * Associa um usuário à uma empresa
+     * Associa um usuário a uma empresa. Usuários que não pertencem a role COMPANY não poderão ser associados.
      * @param userId UUID do usuário
      * @param companyId UUID da empresa
      * @return User response
@@ -97,7 +95,7 @@ public record UserService(
 
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        if (!COMPANY_ROLE.equalsIgnoreCase(user.getRole().getRole())) {
+        if (Role.COMPANY != user.getRole()) {
             throw new IllegalArgumentException("User must have a company role to be associated to a company");
         }
 
@@ -136,7 +134,7 @@ public record UserService(
 
     private void updateUser(User user, UserUpdateRequest request) {
         if (request.name() != null) user.setName(request.name());
-        if (request.role() != null) user.setRole(roleRepository.findByRole(request.role()).orElseThrow(() -> new IllegalArgumentException("Unknown role name")));
+        if (request.role() != null) user.setRole(Role.fromString(request.role()));
         if (request.active() != null) user.setActive(request.active());
         if (request.blocked() != null) user.setBlocked(request.blocked());
     }

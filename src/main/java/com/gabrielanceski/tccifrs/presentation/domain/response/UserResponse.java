@@ -26,7 +26,7 @@ public record UserResponse(
             user.getDocument(),
             user.getActive(),
             user.getBlocked(),
-            user.getRole().getRole(),
+            user.getRole().name(),
             user.getCompany() == null ? null : user.getCompany().getId(),
             user.getTeams().stream().map(TeamResponse::fromEntity).collect(Collectors.toSet())
         );
@@ -39,7 +39,7 @@ public record UserResponse(
                 user.getDocument(),
                 user.getActive(),
                 user.getBlocked(),
-                user.getRole().getRole(),
+                user.getRole().name(),
                 user.getCompany() == null ? null : user.getCompany().getId(),
                 teams.stream().map(TeamResponse::fromEntity).collect(Collectors.toSet())
         );
