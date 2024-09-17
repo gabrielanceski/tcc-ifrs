@@ -23,4 +23,9 @@ server:
   port: 8080
 logging:
   level:
+    com.gabrielanceski.tccifrs: DEBUG
     org.springframework.security: TRACE
+
+jwt:
+  public-key: classpath:public.pub
+  private-key: classpath:private.key
