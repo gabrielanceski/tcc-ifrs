@@ -1,5 +1,6 @@
 package com.gabrielanceski.tccifrs.domain.entity;
 
+import com.gabrielanceski.tccifrs.domain.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -28,9 +29,8 @@ public class User {
     private Boolean active;
     private Boolean blocked;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id", nullable = false)
-    private UserRole role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @ManyToOne
     @JoinColumn(name = "company_id")
