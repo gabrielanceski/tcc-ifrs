@@ -1,6 +1,6 @@
 package com.gabrielanceski.tccifrs.application.service;
 
-import com.gabrielanceski.tccifrs.domain.Constants;
+import com.gabrielanceski.tccifrs.domain.Role;
 import com.gabrielanceski.tccifrs.domain.entity.Team;
 import com.gabrielanceski.tccifrs.domain.entity.User;
 import com.gabrielanceski.tccifrs.exception.UserNotFoundException;
@@ -68,7 +68,7 @@ public record TeamService(TeamRepository teamRepository, UserRepository userRepo
 
     private void checkIfUserCanBeAssociatedToTeam(User user) {
         log.debug("checkIfUserCanBeAssociatedToTeam() - Checking if user <{}> can be associated to a team", user.getId());
-        if (Constants.MASTER_ROLE.equalsIgnoreCase(user.getRole().getRole())) {
+        if (Role.MASTER == user.getRole()) {
             throw new IllegalArgumentException("User id <" + user.getId() + "> cannot be associated to a team");
         }
     }
