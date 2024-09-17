@@ -24,6 +24,8 @@ public class Company {
     @Column(nullable = false)
     private String address;
 
+    private String contacts;
+
     @OneToMany
     @JoinColumn(name = "company_id")
     private List<User> users;
