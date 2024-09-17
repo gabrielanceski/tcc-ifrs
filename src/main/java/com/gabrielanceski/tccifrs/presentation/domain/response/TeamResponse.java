@@ -1,0 +1,26 @@
+package com.gabrielanceski.tccifrs.presentation.domain.response;
+
+import com.gabrielanceski.tccifrs.domain.entity.Project;
+import com.gabrielanceski.tccifrs.domain.entity.Team;
+import com.gabrielanceski.tccifrs.domain.entity.User;
+
+import java.util.Set;
+import java.util.stream.Collectors;
+
+public record TeamResponse(
+    String id,
+    String name,
+    String leaderId,
+    Set<String> members,
+    Set<String> projects
+) {
+  public static TeamResponse fromEntity(Team team) {
+    return new TeamResponse(
+        team.getId(),
+        team.getName(),
+        team.getLeader().getId(),
+        team.getMembers().stream().map(User::getId).collect(Collectors.toSet()),
+        team.getProjects().stream().map(Project::getId).collect(Collectors.toSet())
+    );
+  }
+}
