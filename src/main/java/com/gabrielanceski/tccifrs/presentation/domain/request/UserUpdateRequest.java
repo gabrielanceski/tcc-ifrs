@@ -5,10 +5,10 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record UserCreateRequest(
-    @NotNull @NotEmpty String name,
-    @NotNull @NotEmpty String document,
-    @NotNull @NotEmpty String password,
-    @NotNull @NotEmpty String role
+public record UserUpdateRequest(
+    String name,
+    String role,
+    Boolean active,
+    Boolean blocked
 ) {
 }

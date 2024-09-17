@@ -33,16 +33,26 @@ public class SecurityConfiguration {
     @Value("${jwt.private-key}")
     private RSAPrivateKey privateKey;
 
+    private final RoleBasedConfiguration roleBasedConfiguration;
+
+    public SecurityConfiguration(RoleBasedConfiguration roleBasedConfiguration) {
+        this.roleBasedConfiguration = roleBasedConfiguration;
+    }
+
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         auth -> auth
                                 .requestMatchers("/auth/**").permitAll()
+                                .requestMatchers("/company/**").hasAnyRole("ADMIN", "MASTER", "COMPANY")
+                                .requestMatchers("/user/**").hasAnyRole("ADMIN", "MASTER")
                                 .anyRequest().authenticated())
                 .oauth2ResourceServer(
                         config -> config.jwt(
                                 jwt -> jwt.decoder(jwtDecoder())));
+
+
         return http.build();
     }
 
