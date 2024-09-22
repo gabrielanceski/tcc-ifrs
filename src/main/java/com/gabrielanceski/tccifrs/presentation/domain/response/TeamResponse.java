@@ -1,5 +1,6 @@
 package com.gabrielanceski.tccifrs.presentation.domain.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.gabrielanceski.tccifrs.domain.entity.Project;
 import com.gabrielanceski.tccifrs.domain.entity.Team;
 import com.gabrielanceski.tccifrs.domain.entity.User;
@@ -10,11 +11,11 @@ import java.util.stream.Collectors;
 public record TeamResponse(
     String id,
     String name,
-    String leaderId,
+    @JsonProperty("leader_id") String leaderId,
     Set<String> members,
     Set<String> projects
 ) {
-  public static TeamResponse fromEntity(Team team) {
+  public static TeamResponse  fromEntity(Team team) {
     return new TeamResponse(
         team.getId(),
         team.getName(),
