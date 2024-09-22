@@ -2,13 +2,18 @@ package com.gabrielanceski.tccifrs.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "logs")
-@Data
+@Getter
+@Setter
+@ToString
 public class Log {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

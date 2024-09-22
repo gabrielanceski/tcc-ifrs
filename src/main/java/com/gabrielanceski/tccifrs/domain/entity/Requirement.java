@@ -1,15 +1,20 @@
 package com.gabrielanceski.tccifrs.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "requirements")
-@Data
+@Getter
+@Setter
+@ToString
 public class Requirement {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -49,4 +54,16 @@ public class Requirement {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Requirement that = (Requirement) o;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(blockedBy, that.blockedBy) && Objects.equals(project, that.project) && Objects.equals(reporter, that.reporter);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, blockedBy, project, reporter);
+    }
 }

@@ -2,6 +2,9 @@ package com.gabrielanceski.tccifrs.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -13,7 +16,9 @@ import java.util.List;
         @UniqueConstraint(columnNames = {"document"})
     }
 )
-@Data
+@Getter
+@Setter
+@ToString(exclude = {"users"})
 public class Company {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
