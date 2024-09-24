@@ -1,14 +1,12 @@
 package com.gabrielanceski.tccifrs.domain.entity;
 
+import com.gabrielanceski.tccifrs.domain.Auditable;
+import com.gabrielanceski.tccifrs.domain.ProjectStatus;
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
 
@@ -17,7 +15,7 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString(exclude = {"teams"})
-public class Project {
+public class Project extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -26,9 +24,13 @@ public class Project {
     private String name;
 
     @Column(nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private ProjectStatus status;
 
     private String description;
+
+    @ManyToOne
+    private Company company;
 
     @ManyToMany
     @JoinTable(
@@ -38,23 +40,16 @@ public class Project {
     )
     private Set<Team> teams;
 
-    @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Project project = (Project) o;
-        return Objects.equals(id, project.id) && Objects.equals(name, project.name) && Objects.equals(status, project.status) && Objects.equals(description, project.description) && Objects.equals(createdAt, project.createdAt);
+        return Objects.equals(id, project.id) && Objects.equals(name, project.name) && status == project.status && Objects.equals(description, project.description) && Objects.equals(company, project.company) && Objects.equals(createdAt, project.createdAt) && Objects.equals(updatedAt, project.updatedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, status, description, createdAt);
+        return Objects.hash(id, name, status, description, company, createdAt, updatedAt);
     }
 }
