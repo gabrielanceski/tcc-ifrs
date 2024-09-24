@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
         log.error("handleGenericExceptions() - message <{}> - error: ", exception.getMessage(), exception);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
             new FaultResponse(
-                exception.getMessage(),
+                "Internal server error.",
                 HttpStatus.INTERNAL_SERVER_ERROR.value()
             )
         );
