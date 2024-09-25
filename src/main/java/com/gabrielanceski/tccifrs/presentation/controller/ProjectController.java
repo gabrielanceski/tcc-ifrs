@@ -19,7 +19,7 @@ public class ProjectController {
 
     @PostMapping
     public ResponseEntity<ProjectResponse> createProject(@RequestBody @Valid ProjectCreateRequest request) {
-        return ResponseEntity.ok(projectService.create(request));
+        return ResponseEntity.ok(projectService.createProject(request));
     }
 
     @GetMapping
@@ -34,6 +34,6 @@ public class ProjectController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<ProjectResponse> updateProject(@PathVariable String id, @RequestBody @Valid ProjectUpdateRequest request) {
-        return ResponseEntity.ok(projectService.update(id, request));
+        return ResponseEntity.ok(projectService.updateProject(id, request));
     }
 }

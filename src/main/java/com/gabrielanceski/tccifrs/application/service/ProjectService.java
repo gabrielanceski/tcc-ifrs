@@ -11,6 +11,7 @@ import com.gabrielanceski.tccifrs.presentation.domain.request.ProjectCreateReque
 import com.gabrielanceski.tccifrs.presentation.domain.request.ProjectUpdateRequest;
 import com.gabrielanceski.tccifrs.presentation.domain.response.ProjectResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -20,6 +21,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProjectService {
     private final ProjectRepository projectRepository;
     private final CompanyRepository companyRepository;
@@ -34,7 +36,8 @@ public class ProjectService {
      * @param request Request com os dados básicos para gerar um novo projeto.
      * @return Response com os dados do projeto criado.
      */
-    public ProjectResponse create(ProjectCreateRequest request) {
+    public ProjectResponse createProject(ProjectCreateRequest request) {
+        log.info("createProject() - creating new project - request <{}>", request);
         Company company = companyRepository.findById(request.companyId())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Company not found"));
 
@@ -54,12 +57,14 @@ public class ProjectService {
     }
 
     public ProjectResponse getDetails(String id) {
+        log.info("getDetails() - getting project details - projectId <{}>", id);
         return projectRepository.findById(id)
             .map(ProjectResponse::fromEntity)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));
     }
 
-    public ProjectResponse update(String id, ProjectUpdateRequest request) {
+    public ProjectResponse updateProject(String id, ProjectUpdateRequest request) {
+        log.info("updateProject() - updating project <{}> - request <{}>", id, request);
         Project project = projectRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));
 
@@ -71,7 +76,8 @@ public class ProjectService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Company not found"));
             project.setCompany(company);
         }
-        if (request.getTeams() != null && !request.getTeams().isEmpty()) {
+        if (request.getTeams() != null) {
+            log.debug("updateProject() - changing teamList for project <{}>", id);
             Set<Team> teams = teamRepository.findTeamsByIdList(request.getTeams());
             project.setTeams(teams);
         }
@@ -79,6 +85,7 @@ public class ProjectService {
         try {
             return ProjectResponse.fromEntity(projectRepository.save(project));
         } catch (Exception e) {
+            log.error("updateProject() - error updating project data - projectId <{}>", id, e);
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Error updating project data - projectId <" + id + ">");
         }
     }
