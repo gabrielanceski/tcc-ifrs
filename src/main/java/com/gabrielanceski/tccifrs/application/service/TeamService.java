@@ -165,9 +165,7 @@ public class TeamService {
     }
 
     public List<TeamResponse> listTeams() {
-        List<Team> teams = teamRepository.findAll();
         log.info("listTeams() - Listing all teams");
-        log.info("teamLIst {}", teams.getFirst().getMembers().size());
         return teamRepository.findAll().stream()
             .map(TeamResponse::fromEntity)
             .collect(Collectors.toList());
