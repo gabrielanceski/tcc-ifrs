@@ -3,9 +3,12 @@ package com.gabrielanceski.tccifrs.application.service;
 import com.gabrielanceski.tccifrs.domain.ProjectStatus;
 import com.gabrielanceski.tccifrs.domain.entity.Company;
 import com.gabrielanceski.tccifrs.domain.entity.Project;
+import com.gabrielanceski.tccifrs.domain.entity.Team;
 import com.gabrielanceski.tccifrs.infrastructure.repository.CompanyRepository;
 import com.gabrielanceski.tccifrs.infrastructure.repository.ProjectRepository;
+import com.gabrielanceski.tccifrs.infrastructure.repository.TeamRepository;
 import com.gabrielanceski.tccifrs.presentation.domain.request.ProjectCreateRequest;
+import com.gabrielanceski.tccifrs.presentation.domain.request.ProjectUpdateRequest;
 import com.gabrielanceski.tccifrs.presentation.domain.response.ProjectResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +23,7 @@ import java.util.Set;
 public class ProjectService {
     private final ProjectRepository projectRepository;
     private final CompanyRepository companyRepository;
+    private final TeamRepository teamRepository;
 
     /**
      * Cria um novo projeto
@@ -55,4 +59,27 @@ public class ProjectService {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));
     }
 
+    public ProjectResponse update(String id, ProjectUpdateRequest request) {
+        Project project = projectRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));
+
+        if (request.getName() != null) project.setName(request.getName());
+        if (request.getDescription() != null) project.setDescription(request.getDescription());
+        if (request.getStatus() != null) project.setStatus(ProjectStatus.fromString(request.getStatus()));
+        if (request.getCompanyId() != null) {
+            Company company = companyRepository.findById(request.getCompanyId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Company not found"));
+            project.setCompany(company);
+        }
+        if (request.getTeams() != null && !request.getTeams().isEmpty()) {
+            Set<Team> teams = teamRepository.findTeamsByIdList(request.getTeams());
+            project.setTeams(teams);
+        }
+
+        try {
+            return ProjectResponse.fromEntity(projectRepository.save(project));
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Error updating project data - projectId <" + id + ">");
+        }
+    }
 }

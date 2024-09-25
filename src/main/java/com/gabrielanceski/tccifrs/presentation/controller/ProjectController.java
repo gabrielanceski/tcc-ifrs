@@ -2,6 +2,7 @@ package com.gabrielanceski.tccifrs.presentation.controller;
 
 import com.gabrielanceski.tccifrs.application.service.ProjectService;
 import com.gabrielanceski.tccifrs.presentation.domain.request.ProjectCreateRequest;
+import com.gabrielanceski.tccifrs.presentation.domain.request.ProjectUpdateRequest;
 import com.gabrielanceski.tccifrs.presentation.domain.response.ProjectResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,5 +30,10 @@ public class ProjectController {
     @GetMapping("/{id}")
     public ResponseEntity<ProjectResponse> getProject(@PathVariable String id) {
         return ResponseEntity.ok(projectService.getDetails(id));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ProjectResponse> updateProject(@PathVariable String id, @RequestBody @Valid ProjectUpdateRequest request) {
+        return ResponseEntity.ok(projectService.update(id, request));
     }
 }
