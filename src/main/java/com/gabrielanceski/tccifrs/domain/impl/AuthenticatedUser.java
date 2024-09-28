@@ -46,4 +46,8 @@ public class AuthenticatedUser implements UserDetails {
     public boolean isEnabled() {
         return entity.getActive();
     }
+
+    public User getEntity() {
+        return entity;
+    }
 }
