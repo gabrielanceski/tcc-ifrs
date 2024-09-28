@@ -138,4 +138,11 @@ public class ProjectService {
         return projectRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));
     }
+
+    public void cancelProject(String id) {
+        log.info("cancelProject() - canceling project - projectId <{}>", id);
+        Project project = getProjectById(id);
+        project.setStatus(ProjectStatus.CANCELED);
+        projectRepository.save(project);
+    }
 }
