@@ -11,4 +11,8 @@ services:
       - "./database:/var/lib/mysql"
     ports:
       - 3306:3306
-    mem_limit: 300m
+    deploy:
+      resources:
+        limits:
+          memory: 300m
+          cpus: '0.5'
