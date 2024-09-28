@@ -14,6 +14,7 @@ import com.gabrielanceski.tccifrs.infrastructure.repository.UserRepository;
 import com.gabrielanceski.tccifrs.presentation.domain.request.ProjectCreateRequest;
 import com.gabrielanceski.tccifrs.presentation.domain.request.ProjectUpdateRequest;
 import com.gabrielanceski.tccifrs.presentation.domain.response.ProjectResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -58,6 +59,7 @@ public class ProjectService {
         project.setProjectManager(projectManager);
         project.setCompany(company);
         project.setTeams(Set.of());
+        project.setRequirements(Set.of());
 
         return ProjectResponse.fromEntity(projectRepository.save(project));
     }
@@ -69,9 +71,7 @@ public class ProjectService {
 
     public ProjectResponse getDetails(String id) {
         log.info("getDetails() - getting project details - projectId <{}>", id);
-        return projectRepository.findById(id)
-            .map(ProjectResponse::fromEntity)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));
+        return ProjectResponse.fromEntity(getProjectById(id));
     }
 
     public ProjectResponse updateProject(String id, ProjectUpdateRequest request, AuthenticatedUser authenticatedUser) {
@@ -80,9 +80,7 @@ public class ProjectService {
         Project project = projectRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));
 
-        if (!isAbleToUpdateProject(project, authenticatedUser)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to update this project.");
-        }
+        checkIfUserCanUpdateProject(project, authenticatedUser);
 
         if (request.getName() != null) project.setName(request.getName());
         if (request.getDescription() != null) project.setDescription(request.getDescription());
@@ -101,6 +99,10 @@ public class ProjectService {
         if (request.getTeams() != null) {
             log.debug("updateProject() - changing teamList for project <{}>", id);
             Set<Team> teams = teamRepository.findTeamsByIdList(request.getTeams());
+            if (teams.size() != request.getTeams().size()) {
+                log.error("updateProject() - some teams were not found - projectId <{}> | request teams <{}>", id, request.getTeams());
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Some teams were not found. Opperation canceled.");
+            }
             project.setTeams(teams);
         }
 
@@ -117,13 +119,12 @@ public class ProjectService {
      * Para um usuário poder atualizar um projeto, ele precisa ser de nível ADMIN OU superior OU ser PROFESSOR, dono do projeto.
      * @param project Projeto a ser atualizado
      * @param authenticatedUser Usuário autenticado
-     * @return true se o usuário pode atualizar o projeto, false caso contrário.
      */
-    private boolean isAbleToUpdateProject(Project project, AuthenticatedUser authenticatedUser) {
-        log.debug("isAbleToUpdateProject() - checking if user can update project - projectId <{}> | userId <{}> | role <{}>", project.getId(), authenticatedUser.getEntity().getId(), authenticatedUser.getEntity().getRole());
-        if (Role.MASTER == authenticatedUser.getEntity().getRole() || Role.ADMIN == authenticatedUser.getEntity().getRole())
-            return true;
-        return project.getProjectManager().getId().equals(authenticatedUser.getEntity().getId());
+    public void checkIfUserCanUpdateProject(Project project, AuthenticatedUser authenticatedUser) {
+        log.info("checkIfUserCanUpdateProject() - checking if user can update project - projectId <{}> | userId <{}> | role <{}>", project.getId(), authenticatedUser.getEntity().getId(), authenticatedUser.getEntity().getRole());
+        if (Role.MASTER == authenticatedUser.getEntity().getRole() || Role.ADMIN == authenticatedUser.getEntity().getRole()) return;
+        if (project.getProjectManager().getId().equals(authenticatedUser.getEntity().getId())) return;
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to update this project.");
     }
 
     private void checkIfUserCanBeProjectManager(User user) {
@@ -131,5 +132,10 @@ public class ProjectService {
         if (Role.PROFESSOR == user.getRole() || Role.ADMIN == user.getRole())
             return;
         throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This user is not allowed to be a Project Manager.");
+    }
+
+    public Project getProjectById(String id) {
+        return projectRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));
     }
 }

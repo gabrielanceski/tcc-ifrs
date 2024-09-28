@@ -24,6 +24,7 @@ public class ProjectResponse {
     @JsonProperty("project_manager") private UserResponse projectManager;
     private CompanyResponse company;
     private Set<TeamResponse> teams;
+    private Set<RequirementResponse> requirements;
     @JsonProperty("created_at") private String createdAt;
     @JsonProperty("updated_at") private String updatedAt;
 
@@ -38,9 +39,24 @@ public class ProjectResponse {
                 .teams(project.getTeams().stream()
                         .map(TeamResponse::fromEntity)
                         .collect(Collectors.toSet()))
+                .requirements(project.getRequirements().stream()
+                        .map(RequirementResponse::fromEntity)
+                        .collect(Collectors.toSet()))
                 .createdAt(project.getCreatedAt().toString())
                 .updatedAt(project.getUpdatedAt().toString())
                 .build();
     }
 
+    public static ProjectResponse simplefromEntity(Project project) {
+        return ProjectResponse.builder()
+                .id(project.getId())
+                .name(project.getName())
+                .description(project.getDescription())
+                .status(project.getStatus().name())
+                .projectManager(UserResponse.simpleFromEntity(project.getProjectManager()))
+                .company(CompanyResponse.fromEntity(project.getCompany()))
+                .createdAt(project.getCreatedAt().toString())
+                .updatedAt(project.getUpdatedAt().toString())
+                .build();
+    }
 }

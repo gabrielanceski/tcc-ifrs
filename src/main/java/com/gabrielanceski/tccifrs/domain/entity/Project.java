@@ -51,7 +51,7 @@ public class Project extends Auditable {
     )
     private Set<Team> teams;
 
-    @OneToMany
+    @OneToMany(mappedBy = "project")
     private Set<Requirement> requirements;
 
     @Override
@@ -59,11 +59,11 @@ public class Project extends Auditable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Project project = (Project) o;
-        return Objects.equals(id, project.id) && Objects.equals(name, project.name) && status == project.status && Objects.equals(description, project.description) && Objects.equals(company, project.company) && Objects.equals(createdAt, project.createdAt) && Objects.equals(updatedAt, project.updatedAt);
+        return Objects.equals(id, project.id) && Objects.equals(name, project.name) && status == project.status && Objects.equals(description, project.description) && Objects.equals(company, project.company);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, status, description, company, createdAt, updatedAt);
+        return Objects.hash(id, name, status, description, company);
     }
 }
