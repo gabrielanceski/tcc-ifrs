@@ -3,11 +3,10 @@ package com.gabrielanceski.tccifrs.exception.handler;
 import com.gabrielanceski.tccifrs.exception.InvalidDataException;
 import com.gabrielanceski.tccifrs.presentation.domain.response.FaultResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.HashMap;
 import java.util.Map;
@@ -68,9 +66,9 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler({DataIntegrityViolationException.class, SQLIntegrityConstraintViolationException.class})
-    public final ResponseEntity<Object> handleDataIntegrityViolation(Exception exception, WebRequest request) {
-        log.error("handleDataIntegrityViolation() - message <{}> - error: ", exception.getMessage(), exception);
+    @ExceptionHandler({DataIntegrityViolationException.class, SQLIntegrityConstraintViolationException.class, HttpMessageNotReadableException.class})
+    public final ResponseEntity<Object> handleUnprocessableExceptions(Exception exception, WebRequest request) {
+        log.error("handleUnprocessableExceptions() - message <{}> - error: ", exception.getMessage(), exception);
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(
                 new FaultResponse(
                     "Something went wrong between the given data and the processing.",
