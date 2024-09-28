@@ -66,6 +66,7 @@ public record UserService(
         user.setBlocked(false);
         user.setActive(true);
         user.setRole(Role.fromString(request.role()));
+        user.setTeams(Set.of());
 
         userRepository.save(user);
 
