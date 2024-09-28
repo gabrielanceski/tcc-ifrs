@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public record UserController(UserService userService) {
 
     @PostMapping("/details")
-    public ResponseEntity<UserResponse> getDetails(@RequestBody UserDetailsRequest request) {
+    public ResponseEntity<UserResponse> getDetails(@RequestBody @Valid UserDetailsRequest request) {
         return ResponseEntity.ok(userService.getUserDetails(request));
     }
 
@@ -25,12 +25,12 @@ public record UserController(UserService userService) {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<UserResponse> update(@PathVariable String id, @RequestBody UserUpdateRequest request) {
+    public ResponseEntity<UserResponse> update(@PathVariable String id, @RequestBody @Valid UserUpdateRequest request) {
         return ResponseEntity.ok(userService.patchUser(id, request));
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<PasswordResetResponse> resetPassword(@RequestBody UserDetailsRequest request) {
+    public ResponseEntity<PasswordResetResponse> resetPassword(@RequestBody @Valid UserDetailsRequest request) {
         return ResponseEntity.ok(userService.resetPassword(request));
     }
 
