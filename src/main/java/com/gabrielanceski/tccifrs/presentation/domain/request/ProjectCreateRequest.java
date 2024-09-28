@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 public record ProjectCreateRequest(
     @NotNull @NotEmpty String name,
     @NotNull @NotEmpty String description,
+    @NotNull @NotEmpty @JsonProperty("project_manager_id") String projectManagerId,
     @NotNull @NotEmpty @JsonProperty("company_id") String companyId
 ) {
 }

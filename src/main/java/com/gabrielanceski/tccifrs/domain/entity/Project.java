@@ -10,11 +10,18 @@ import lombok.ToString;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Representa um projeto.
+ * Projetos podem ter diferentes escopos, desde consultoria até desenvolvimento de software.
+ * Projetos são temporários, possuem início e fim definidos, e são executados para atingir uma série de requisitos especificados.
+ *
+ * @see Requirement
+ */
 @Entity
 @Table(name = "projects")
 @Getter
 @Setter
-@ToString(exclude = {"teams"})
+@ToString(exclude = {"teams", "requirements"})
 public class Project extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -30,6 +37,10 @@ public class Project extends Auditable {
     private String description;
 
     @ManyToOne
+    @JoinColumn(name = "project_manager_id")
+    private User projectManager; // PO kind of
+
+    @ManyToOne
     private Company company;
 
     @ManyToMany
@@ -39,6 +50,9 @@ public class Project extends Auditable {
         inverseJoinColumns = @JoinColumn(name = "team_id")
     )
     private Set<Team> teams;
+
+    @OneToMany
+    private Set<Requirement> requirements;
 
     @Override
     public boolean equals(Object o) {

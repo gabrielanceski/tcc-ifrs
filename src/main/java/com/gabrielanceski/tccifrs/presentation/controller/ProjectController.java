@@ -1,6 +1,8 @@
 package com.gabrielanceski.tccifrs.presentation.controller;
 
 import com.gabrielanceski.tccifrs.application.service.ProjectService;
+import com.gabrielanceski.tccifrs.domain.CurrentUser;
+import com.gabrielanceski.tccifrs.domain.impl.AuthenticatedUser;
 import com.gabrielanceski.tccifrs.presentation.domain.request.ProjectCreateRequest;
 import com.gabrielanceski.tccifrs.presentation.domain.request.ProjectUpdateRequest;
 import com.gabrielanceski.tccifrs.presentation.domain.response.ProjectResponse;
@@ -33,7 +35,7 @@ public class ProjectController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ProjectResponse> updateProject(@PathVariable String id, @RequestBody @Valid ProjectUpdateRequest request) {
-        return ResponseEntity.ok(projectService.updateProject(id, request));
+    public ResponseEntity<ProjectResponse> updateProject(@PathVariable String id, @RequestBody @Valid ProjectUpdateRequest request, @CurrentUser AuthenticatedUser authenticatedUser) {
+        return ResponseEntity.ok(projectService.updateProject(id, request, authenticatedUser));
     }
 }

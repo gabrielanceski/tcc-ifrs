@@ -16,6 +16,7 @@ public class ProjectUpdateRequest {
     private String name;
     private String description;
     private String status;
+    @JsonProperty("project_manager_id") private String projectManagerId;
     @JsonProperty("company_id") private String companyId;
     private Set<String> teams;
 }
