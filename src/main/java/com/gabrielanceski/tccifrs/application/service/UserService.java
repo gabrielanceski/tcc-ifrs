@@ -2,7 +2,6 @@ package com.gabrielanceski.tccifrs.application.service;
 
 import com.gabrielanceski.tccifrs.domain.Role;
 import com.gabrielanceski.tccifrs.domain.entity.Company;
-import com.gabrielanceski.tccifrs.domain.entity.Team;
 import com.gabrielanceski.tccifrs.domain.entity.User;
 import com.gabrielanceski.tccifrs.exception.UnknownRoleException;
 import com.gabrielanceski.tccifrs.exception.UserNotFoundException;
@@ -41,9 +40,8 @@ public record UserService(
         log.info("getUserDetails() - Getting user details: {}", request);
 
         User user = userRepository.findByDocument(request.document()).orElseThrow(UserNotFoundException::new);
-        Set<Team> teams = teamRepository.findTeamsByUserId(user.getId());
 
-        return UserResponse.fromEntity(user, teams);
+        return UserResponse.fromEntity(user);
     }
 
     public UserResponse createUser(UserCreateRequest request) {
