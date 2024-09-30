@@ -16,7 +16,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -89,5 +92,11 @@ public class RequirementService {
         }
 
         return RequirementResponse.fromEntity(requirementRepository.save(requirement));
+    }
+
+    public Set<RequirementResponse> listAll(String projectId) {
+        return requirementRepository.findAllByProjectId(projectId).stream()
+                .map(RequirementResponse::fromEntity)
+                .collect(Collectors.toSet());
     }
 }

@@ -1,21 +1,32 @@
 package com.gabrielanceski.tccifrs.domain.entity;
 
+import com.gabrielanceski.tccifrs.domain.Auditable;
+import com.gabrielanceski.tccifrs.domain.TaskStatus;
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
-import java.time.LocalDateTime;
+import java.util.Objects;
 
+/**
+ * Tarefas de um projeto.
+ * As tarefas podem ser criadas e editadas apenas por líderes de equipe, project managers, ou usuários com papel de ADMIN ou superior.
+ * Uma tarefa pode ser editada por líderes de outras equipes, contato que estejam vinculadas ao mesmo projeto.
+ * Uma tarefa precisa estar vinculada a um requisito.
+ * Quando uma tarefa é criada, ela não possuirá equipe vinculada.
+ * A equipe vinculada a uma tarefa é opcional.
+ * Uma tarefa pode ser bloqueada por outra tarefa.
+ *
+ * @see Requirement
+ * @see Team
+ */
 @Entity
 @Table(name = "tasks")
 @Getter
 @Setter
 @ToString
-public class Task {
+public class Task extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -23,23 +34,35 @@ public class Task {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
-    private String status;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private TaskStatus status;
 
     @ManyToOne
     @JoinColumn(name = "requirement_id", nullable = false)
     private Requirement requirement;
 
     @ManyToOne
-    @JoinColumn(name = "team_id", nullable = false)
+    @JoinColumn(name = "team_id")
     private Team team;
 
-    @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
+    @OneToOne
+    @JoinColumn(name = "blocked_by_id")
+    private Task blockedBy;
 
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return Objects.equals(id, task.id) && Objects.equals(title, task.title) && Objects.equals(description, task.description) && status == task.status && Objects.equals(requirement, task.requirement) && Objects.equals(blockedBy, task.blockedBy);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, description, status, requirement, blockedBy);
+    }
 }

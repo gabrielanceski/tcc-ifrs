@@ -145,4 +145,13 @@ public class ProjectService {
         project.setStatus(ProjectStatus.CANCELED);
         projectRepository.save(project);
     }
+
+    public List<String> getAllProjectTeamLeaders(String id) {
+        log.info("getAllProjectTeamLeaders() - getting all team leaders from project - projectId <{}>", id);
+        Project project = getProjectById(id);
+        return project.getTeams().stream()
+                .map(Team::getLeader)
+                .map(User::getId)
+                .toList();
+    }
 }

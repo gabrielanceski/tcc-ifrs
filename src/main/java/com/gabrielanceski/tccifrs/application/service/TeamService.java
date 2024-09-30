@@ -173,8 +173,7 @@ public class TeamService {
 
     public TeamResponse getTeamDetails(String teamId) {
         log.info("getTeamDetails() - Getting team details for team <{}>", teamId);
-        return TeamResponse.fromEntity(teamRepository.findById(teamId)
-            .orElseThrow(() -> new IllegalArgumentException("Team id <" + teamId + "> not found")));
+        return TeamResponse.fromEntity(getTeamById(teamId));
     }
 
     public TeamResponse updateTeam(TeamUpdateRequest request) {
@@ -195,5 +194,11 @@ public class TeamService {
         team.setMembers(members);
 
         return TeamResponse.fromEntity(teamRepository.save(team));
+    }
+
+    public Team getTeamById(String teamId) {
+        log.info("getTeamById() - Getting team by id <{}>", teamId);
+        return teamRepository.findById(teamId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Team id <" + teamId + "> not found"));
     }
 }
