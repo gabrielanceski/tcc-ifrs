@@ -7,12 +7,19 @@ import com.gabrielanceski.tccifrs.domain.impl.AuthenticatedUser;
 import com.gabrielanceski.tccifrs.infrastructure.repository.ProjectRepository;
 import com.gabrielanceski.tccifrs.infrastructure.repository.RequirementRepository;
 import com.gabrielanceski.tccifrs.presentation.domain.request.RequirementCreateRequest;
+import com.gabrielanceski.tccifrs.presentation.domain.request.RequirementUpdateRequest;
 import com.gabrielanceski.tccifrs.presentation.domain.response.RequirementResponse;
+import com.gabrielanceski.tccifrs.utils.ObjectUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -62,5 +69,34 @@ public class RequirementService {
 
     public RequirementResponse getDetails(String requirementId) {
         return RequirementResponse.fromEntity(getRequirementById(requirementId));
+    }
+
+    public RequirementResponse updateRequirement(String requirementId, RequirementUpdateRequest request, AuthenticatedUser authenticatedUser) {
+        log.info("updateRequirement() - updating requirement - requirementId <{}> - request <{}>", requirementId, request);
+
+        Requirement requirement = getRequirementById(requirementId);
+        projectService.checkIfUserCanUpdateProject(requirement.getProject(), authenticatedUser);
+
+        if (ObjectUtils.nonNullOrEmpty(request.getName())) requirement.setName(request.getName());
+        if (ObjectUtils.nonNullOrEmpty(request.getDescription())) requirement.setDescription(request.getDescription());
+        if (ObjectUtils.nonNullOrEmpty(request.getGoals())) requirement.setGoals(request.getGoals());
+        if (ObjectUtils.nonNullOrEmpty(request.getSpecs())) requirement.setSpecs(request.getSpecs());
+        if (ObjectUtils.nonNullOrEmpty(request.getCollaboration())) requirement.setCollaboration(request.getCollaboration());
+        if (ObjectUtils.nonNullOrEmpty(request.getInnovation())) requirement.setInnovation(request.getInnovation());
+        if (ObjectUtils.nonNullOrEmpty(request.getRestrictions())) requirement.setRestrictions(request.getRestrictions());
+        if (ObjectUtils.nonNullOrEmpty(request.getImportanceLevel())) requirement.setImportanceLevel(RequirementLevel.fromString(request.getImportanceLevel()));
+        if (ObjectUtils.nonNullOrEmpty(request.getEffortLevel())) requirement.setEffortLevel(RequirementLevel.fromString(request.getEffortLevel()));
+        if (ObjectUtils.nonNullOrEmpty(request.getProjectId())) {
+            Project project = projectService.getProjectById(request.getProjectId());
+            requirement.setProject(project);
+        }
+
+        return RequirementResponse.fromEntity(requirementRepository.save(requirement));
+    }
+
+    public Set<RequirementResponse> listAll(String projectId) {
+        return requirementRepository.findAllByProjectId(projectId).stream()
+                .map(RequirementResponse::fromEntity)
+                .collect(Collectors.toSet());
     }
 }
