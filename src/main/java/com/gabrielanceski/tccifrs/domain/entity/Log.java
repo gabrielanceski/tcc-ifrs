@@ -27,6 +27,10 @@ public class Log {
     @JoinColumn(name = "caused_by")
     private User causedBy;
 
+    // Essa coluna pode ser nula, mas vai servir para exibir os logs para a equipe vinculada a umn projeto, nao precisa ser obrigatorio
+    @ManyToOne
+    private Project relatedProject;
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
