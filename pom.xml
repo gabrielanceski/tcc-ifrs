@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.gabrielanceski</groupId>
     <artifactId>tcc-ifrs</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>tcc-ifrs</name>
     <description>tcc-ifrs</description>
     <url/>
