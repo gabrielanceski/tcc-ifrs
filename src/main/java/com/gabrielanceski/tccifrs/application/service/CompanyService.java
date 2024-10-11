@@ -31,7 +31,7 @@ public class CompanyService {
     public CompanyResponse createCompany(CompanyRequest request, AuthenticatedUser authenticatedUser) {
         log.info("createCompany() - creating company - request: <{}>", request);
 
-        if (authenticatedUser.getEntity() == null || Role.ADMIN != authenticatedUser.getEntity().getRole()) {
+        if (Role.MASTER != authenticatedUser.getEntity().getRole() || Role.ADMIN != authenticatedUser.getEntity().getRole()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
 
