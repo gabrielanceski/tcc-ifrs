@@ -10,6 +10,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/user")
 public record UserController(UserService userService) {
@@ -37,6 +39,11 @@ public record UserController(UserService userService) {
     @PostMapping("/company/associate/{userId}/{companyId}")
     public ResponseEntity<UserResponse> associateUserToCompany(@PathVariable String userId, @PathVariable String companyId) {
         return ResponseEntity.ok(userService.associateUserToCompany(userId, companyId));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<UserResponse>> listUsers() {
+        return ResponseEntity.ok(userService.listUsers());
     }
 
 }
