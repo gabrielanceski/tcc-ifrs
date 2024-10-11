@@ -1,6 +1,8 @@
 package com.gabrielanceski.tccifrs.presentation.controller;
 
 import com.gabrielanceski.tccifrs.application.service.CompanyService;
+import com.gabrielanceski.tccifrs.domain.CurrentUser;
+import com.gabrielanceski.tccifrs.domain.impl.AuthenticatedUser;
 import com.gabrielanceski.tccifrs.presentation.domain.request.CompanyRequest;
 import com.gabrielanceski.tccifrs.presentation.domain.response.CompanyResponse;
 import org.springframework.http.ResponseEntity;
@@ -12,15 +14,14 @@ import java.util.List;
 @RequestMapping("/company")
 public record CompanyController(CompanyService companyService) {
 
-    // TODO: empresas podem ser cadastradas apenas por um usuário tipo ADMIN ou superior.
     @PostMapping
-    public ResponseEntity<CompanyResponse> createCompany(@RequestBody CompanyRequest request) {
-        return ResponseEntity.ok(companyService.createCompany(request));
+    public ResponseEntity<CompanyResponse> createCompany(@RequestBody CompanyRequest request, @CurrentUser AuthenticatedUser authenticatedUser) {
+        return ResponseEntity.ok(companyService.createCompany(request, authenticatedUser));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<CompanyResponse> patchCompany(@PathVariable String id, @RequestBody CompanyRequest request) {
-        return ResponseEntity.ok(companyService.patchCompany(id, request));
+    public ResponseEntity<CompanyResponse> patchCompany(@PathVariable String id, @RequestBody CompanyRequest request, @CurrentUser AuthenticatedUser authenticatedUser) {
+        return ResponseEntity.ok(companyService.patchCompany(id, request, authenticatedUser));
     }
 
     @GetMapping("/{id}")
