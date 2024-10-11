@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -136,5 +137,20 @@ public record UserService(
         if (request.role() != null) user.setRole(Role.fromString(request.role()));
         if (request.active() != null) user.setActive(request.active());
         if (request.blocked() != null) user.setBlocked(request.blocked());
+    }
+
+    public List<UserResponse> listUsers() {
+        log.info("listUsers() - Listing all users (simple response)");
+        return userRepository.findAll().stream()
+            .map(
+                (user) -> UserResponse.builder()
+                    .id(user.getId())
+                    .name(user.getName())
+                    .document(user.getDocument())
+                    .role(user.getRole().name())
+                    .active(user.getActive())
+                    .blocked(user.getBlocked())
+                .build()
+            ).toList();
     }
 }
