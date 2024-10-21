@@ -46,4 +46,9 @@ public record UserController(UserService userService) {
         return ResponseEntity.ok(userService.listUsers());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponse> getDetailsById(@PathVariable String id) {
+        return ResponseEntity.ok(userService.getUserDetails(id));
+    }
+
 }

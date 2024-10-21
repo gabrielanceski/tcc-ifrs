@@ -45,6 +45,14 @@ public record UserService(
         return UserResponse.fromEntity(user);
     }
 
+    public UserResponse getUserDetails(String userId) {
+        log.info("getUserDetails() - Getting user details for id: {}", userId);
+
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
+        return UserResponse.fromEntity(user);
+    }
+
     public UserResponse createUser(UserCreateRequest request) {
         log.info("createUser() - creating user - request: <{}>", request);
 
