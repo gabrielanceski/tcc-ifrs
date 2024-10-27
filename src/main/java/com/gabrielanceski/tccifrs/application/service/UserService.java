@@ -142,7 +142,11 @@ public record UserService(
 
     private void updateUser(User user, UserUpdateRequest request) {
         if (request.name() != null) user.setName(request.name());
-        if (request.role() != null) user.setRole(Role.fromString(request.role()));
+        if (request.role() != null) {
+            if (Role.COMPANY == user.getRole())
+                throw new IllegalArgumentException("Cannot change role of a user with role COMPANY");
+            user.setRole(Role.fromString(request.role()));
+        }
         if (request.active() != null) user.setActive(request.active());
         if (request.blocked() != null) user.setBlocked(request.blocked());
     }
